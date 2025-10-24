@@ -5,7 +5,7 @@
 
 (defn start []
   (set! *print-namespace-maps* false)
-  (repl/set-prep! (fn [] system/datomic-config))
+  (repl/set-prep! (fn [] system/config))
   (repl/go))
 
 (defn reset []
