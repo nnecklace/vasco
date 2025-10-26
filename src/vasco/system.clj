@@ -3,7 +3,8 @@
    [clojure.java.io :as io]
    [datomic.api :as d]
    [integrant.core :as ig]
-   [vasco.server :as server]
+   [vasco.http.server :as server]
+   [vasco.http.handler :as http-handler]
    [vasco.servitor.core :as servitor]))
 
 (defmethod ig/init-key :application/environment [_ _])
@@ -15,7 +16,7 @@
   (server/stop server))
 
 (defmethod ig/init-key :http/handler [_ {:keys [dependencies]}]
-  (server/handler dependencies))
+  (http-handler/router dependencies))
 
 (defmethod ig/init-key :datomic/migrations [_ {:keys [config]}]
   config)

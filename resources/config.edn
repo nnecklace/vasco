@@ -1,7 +1,14 @@
 {:application/environment :dev
- :http/server {:config {:port  7700} :handler #ig/ref :http/handler}
+
+ :http/server {:config {:port 7700} :handler #ig/ref :http/handler}
+
  :http/handler {:dependencies {:conn #ig/ref :datomic/conn :db #ig/ref :datomic/db}}
- :servitor/service {:services [{:id :vasco.servitor.task/fetch-trains :interval 10000 :run? true}]}
+
+ :servitor/service {:services [{:id :vasco.servitor.task/fetch-trains :interval 10000 :run? false}
+                               {:id :vasco.servitor.task/fetch-map :interval 10000 :run? false}]}
+
  :datomic/migrations {:config {}}
+
  :datomic/conn {:db/host "datomic:mem://" :db/name "vasco" :db/port 4334}
+
  :datomic/db {:conn #ig/ref :datomic/conn}}
