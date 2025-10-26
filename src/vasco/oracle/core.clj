@@ -3,46 +3,41 @@
    [vasco.oracle.answers.add :as add]
    [clojure.spec.alpha :as s]))
 
-(defn question [question answer]
-  {::question question
-   ::answer answer})
-
-(defn give-answer [system {:keys [handler middleware schema]} ctx]
-  (if (s/valid? schema ctx)
+(defn prepare-answer [system {:question/keys [context interceptor answer]} ctx]
+  (if (s/valid? context ctx)
     ;; chekc that context is valid according to schema
     ;; run all middlewares
     ;; run handler
-    (handler system ctx)
-    (throw (Exception. "Ctx did not conform to schema"))))
+    (answer system ctx)
+    (throw (Exception. "Ctx did not conform to the expected context"))))
 
 ;; TODO: check for duplicate questions
 (defn define [& questions]
   (let [question-registry (->> questions
-                               (map (juxt ::question identity))
+                               (map (juxt :question/kind #(dissoc % :question/kind)))
                                (into {}))
-        dispatcher
+        consult-fn
         (fn [system params]
-          (let [{:keys [question ctx]} params
-                answer (some-> question-registry
-                               question
-                               ::answer)]
-            (if answer
-              (give-answer system answer ctx)
+          (let [{:keys [kind ctx]} params
+                ;; TODO: does this and need to be here?
+                question (and kind (kind question-registry))]
+            (if question
+              (prepare-answer system question ctx)
               (throw (Exception. "Invalid question")))))]
-    (with-meta dispatcher {::registry question-registry})))
+    (with-meta consult-fn {::registry question-registry})))
 
-(def dispatcher
+(def consult
   (define
-    (question :add add/answer)))
+    add/question))
 
-(defn describe [dispatcher]
-  (let [registry (::registry (meta dispatcher))]
-    (->> (for [[q {:keys [::answer]}] registry
-               :let [{:keys [handler middleware schema]} answer]]
-           [q {:handler handler
-               :middleware middleware
-               :schema (s/describe schema)}])
+(defn reveal [consult-fn]
+  (let [registry (::registry (meta consult-fn))]
+    (->> (for [[kind question] registry
+               :let [{:question/keys [answer interceptor context]} question]]
+           [kind {:answer answer
+                  :interceptor interceptor
+                  :context (s/describe context)}])
          (into {}))))
 
 (comment
-  (describe dispatcher))
+  (reveal consult))

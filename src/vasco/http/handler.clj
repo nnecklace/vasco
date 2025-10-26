@@ -7,7 +7,7 @@
   (let [{:keys [uri params system]} request]
     (cond
       (= uri "/oracle")
-      (oracle/dispatcher system params)
+      (oracle/consult system params)
 
       (= uri "/riker")
       "Riker!"

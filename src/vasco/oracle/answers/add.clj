@@ -4,17 +4,15 @@
 
 (s/def ::ctx number?)
 
-(defn handler [system ctx]
+(defn answer [system ctx]
   (+ 10 ctx))
 
-;; TODO: These keys should probably be namespaced
-(def answer
-  {:handler #'handler
-   :middleware #{:auth}
-   :schema ::ctx})
+(def question
+  {:question/kind :questions/add
+   :question/answer #'answer
+   :question/interceptor #{:auth}
+   :question/context ::ctx})
 
 (comment
-
   (::s/problems (s/explain-data ::ctx "25"))
-
   )
