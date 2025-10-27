@@ -1,6 +1,6 @@
 (ns vasco.oracle.core
   (:require
-   [vasco.oracle.answers.add :as add]
+   [vasco.oracle.questions.add :as add]
    [clojure.spec.alpha :as s]))
 
 (defn prepare-answer [system {:question/keys [context interceptor answer]} ctx]

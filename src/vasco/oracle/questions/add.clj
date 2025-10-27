@@ -1,4 +1,4 @@
-(ns vasco.oracle.answers.add
+(ns vasco.oracle.questions.add
   (:require
    [clojure.spec.alpha :as s]))
 
