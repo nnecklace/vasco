@@ -9,6 +9,4 @@
 
  :datomic/migrations {:config {}}
 
- :datomic/conn {:db/host "datomic:mem://" :db/name "vasco" :db/port 4334}
-
- :datomic/db {:conn #ig/ref :datomic/conn}}
+ :datomic/conn {:db/host "datomic:mem://" :db/name "vasco" :db/port 4334}}

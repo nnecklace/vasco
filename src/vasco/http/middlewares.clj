@@ -1,5 +1,6 @@
 (ns vasco.http.middlewares
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [datomic.api :as d]))
 
 (defn wrap-post-method [handler]
   (fn [request]
@@ -7,11 +8,11 @@
       (handler request)
       (throw (Exception. "Method not allowed")))))
 
-(defn create-system [{:keys [db] :as dependencies}]
+(defn create-system [{:keys [conn] :as dependencies}]
   (assoc dependencies
          :now (java.time.Instant/now)
          :now-ld (java.time.LocalDate/now)
-         :db (db)))
+         :db (d/db conn)))
 
 (defn wrap-system [handler dependencies]
   (fn [request]

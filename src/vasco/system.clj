@@ -7,7 +7,8 @@
    [vasco.http.handler :as http-handler]
    [vasco.servitor.core :as servitor]))
 
-(defmethod ig/init-key :application/environment [_ _])
+(defmethod ig/init-key :application/environment [_ env]
+  env)
 
 (defmethod ig/init-key :http/server [_ {:keys [config handler]}]
   (server/start handler config))
@@ -29,9 +30,6 @@
 
 (defmethod ig/halt-key! :datomic/conn [_ conn]
   (d/release conn))
-
-(defmethod ig/init-key :datomic/db [_ {:keys [conn]}]
-  (fn [] (d/db conn)))
 
 (defmethod ig/init-key :servitor/service [_ {:keys [services]}]
   (let [services (->> services
