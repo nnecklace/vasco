@@ -57,6 +57,21 @@
        keys
        set))
 
+(defn attach-handler [dispatcher]
+  (fn [handler]
+    (fn [{:keys [uri system params] :as request}]
+      (if (= "/oracle" uri)
+        (cond
+          (not (s/valid? valid-params? params))
+          (throw (Exception. "Request body did not conform to spec"))
+
+          (not (contains? (defined-questions dispatcher) (:kind params)))
+          (throw (Exception. "Invalid qestion"))
+
+          :else
+          (consult dispatcher system params))
+        (handler request)))))
+
 (comment
   (reveal dispatcher)
   (defined-questions dispatcher)
