@@ -1,6 +1,25 @@
 (ns vasco.http.middlewares
   (:require [clojure.edn :as edn]
-            [datomic.api :as d]))
+            [datomic.api :as d]
+            [clojure.spec.alpha :as s]
+            [vasco.oracle.core :as oracle]))
+
+(defn validate-oracle-request [handler {:keys [params] :as request}]
+  (cond
+    (not (s/valid? oracle/valid-params? params))
+    (throw (Exception. "Request body did not conform to spec"))
+
+    (not (contains? (oracle/defined-questions oracle/dispatcher) (:kind params)))
+    (throw (Exception. "Invalid qestion"))
+
+    :else
+    (handler request)))
+
+(defn wrap-oracle-validation [handler]
+  (fn [{:keys [uri] :as request}]
+    (if (= "/oracle" uri)
+      (validate-oracle-request handler request)
+      (handler request))))
 
 (defn wrap-post-method [handler]
   (fn [request]

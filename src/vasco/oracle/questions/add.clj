@@ -4,8 +4,9 @@
 
 (s/def ::ctx number?)
 
-(defn answer [system ctx]
-  (+ 10 ctx))
+(defn answer [_ ctx]
+  [{:computation/kind :computed/result
+    :computation/data (+ 10 ctx)}])
 
 (def question
   {:question/kind :questions/add

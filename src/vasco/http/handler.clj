@@ -7,7 +7,7 @@
   (let [{:keys [uri params system]} request]
     (cond
       (= uri "/oracle")
-      (oracle/consult system params)
+      (oracle/consult oracle/dispatcher system params)
 
       (= uri "/riker")
       "Riker!"
@@ -17,7 +17,8 @@
 
 (defn router [dependencies]
   (-> handler
-      (middlewares/wrap-result)
       (middlewares/wrap-system dependencies)
+      (middlewares/wrap-oracle-validation)
       (middlewares/wrap-parsed-request)
-      (middlewares/wrap-post-method)))
+      (middlewares/wrap-post-method)
+      (middlewares/wrap-result)))
