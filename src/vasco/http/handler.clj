@@ -13,9 +13,8 @@
       :else
       (throw (Exception. "Route not found")))))
 
-;; TODO: Think about oracle/attach-handler
 (defn router [dependencies]
-  (let [wrap-oracle-handler (oracle/attach-handler oracle/dispatcher)]
+  (let [wrap-oracle-handler (oracle/create-handler oracle/dispatcher)]
     (-> handler
         (wrap-oracle-handler)
         (middlewares/wrap-system dependencies)

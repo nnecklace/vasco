@@ -3,10 +3,7 @@
    [vasco.oracle.questions.add :as add]
    [clojure.spec.alpha :as s]))
 
-(defn valid-params? [params]
-  (and (contains? params :kind) (contains? params :ctx)))
-
-(defn prepare-answer [system {:question/keys [context interceptor answer]} ctx]
+(defn invoke-question [system {:question/keys [context interceptor answer]} ctx]
   (if (s/valid? context ctx)
     ;; run all interceptors
     ;; run handler
@@ -29,10 +26,10 @@
         (fn [system params]
           (let [{:keys [kind ctx]} params
                 question (kind question-registry)]
-            ;; TODO: This if is not needed
-            (prepare-answer system question ctx)))]
+            (invoke-question system question ctx)))]
     (with-meta dispatcher {::registry question-registry})))
 
+;; TODO: updating the dispatcher will require running dev/reset for changes to take affect
 (def dispatcher
   (define
     add/question))
@@ -57,12 +54,12 @@
        keys
        set))
 
-(defn attach-handler [dispatcher]
+(defn create-handler [dispatcher]
   (fn [handler]
     (fn [{:keys [uri system params] :as request}]
       (if (= "/oracle" uri)
         (cond
-          (not (s/valid? valid-params? params))
+          (not (and (contains? params :kind) (contains? params :ctx)))
           (throw (Exception. "Request body did not conform to spec"))
 
           (not (contains? (defined-questions dispatcher) (:kind params)))
