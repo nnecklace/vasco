@@ -14,10 +14,9 @@
       (throw (Exception. "Route not found")))))
 
 (defn router [dependencies]
-  (let [wrap-oracle-handler (oracle/create-handler oracle/dispatcher)]
-    (-> handler
-        (wrap-oracle-handler)
-        (middlewares/wrap-system dependencies)
-        (middlewares/wrap-parsed-request)
-        (middlewares/wrap-post-method)
-        (middlewares/wrap-result))))
+  (-> handler
+      oracle/handler
+      (middlewares/wrap-system dependencies)
+      (middlewares/wrap-parsed-request)
+      (middlewares/wrap-post-method)
+      (middlewares/wrap-result)))
