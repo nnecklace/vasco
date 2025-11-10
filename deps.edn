@@ -3,7 +3,9 @@
         com.datomic/peer {:mvn/version "1.0.7394"}
         integrant/integrant {:mvn/version "0.13.1"}
         ring/ring {:mvn/version "1.14.2"}
-        http-kit/http-kit {:mvn/version "2.8.0"}}
+        http-kit/http-kit {:mvn/version "2.8.0"}
+        clj-http/clj-http {:mvn/version "3.13.1"}
+        org.clojure/data.json {:mvn/version "2.5.0"}}
  :aliases
  {:dev {:extra-paths ["dev" "dev-resources" "test"]
         :extra-deps {integrant/repl {:mvn/version "0.4.0"}}}}}
