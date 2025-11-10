@@ -2,9 +2,9 @@
 
  :http/server {:config {:port 7700} :handler #ig/ref :http/handler}
 
- :http/handler {:dependencies {:conn #ig/ref :datomic/conn :db #ig/ref :datomic/db}}
+ :http/handler {:dependencies {:conn #ig/ref :datomic/conn}}
 
- :servitor/service {:services [{:id :vasco.servitor.task/fetch-trains :interval 10000 :run? false}
+ :servitor/service {:services [{:id :vasco.servitor.task/fetch-todos :interval 10000 :run? true}
                                {:id :vasco.servitor.task/fetch-map :interval 10000 :run? false}]}
 
  :datomic/migrations {:config {}}

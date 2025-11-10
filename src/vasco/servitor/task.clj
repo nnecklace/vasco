@@ -1,18 +1,23 @@
-(ns vasco.servitor.task)
+(ns vasco.servitor.task
+  (:require
+   [clj-http.client :as client]
+   [clojure.data.json :as json]))
 
-(defn fetch-trains! []
+(defn fetch-todos! []
   (println "Fetching trains!"))
 
-(defn fetch-map! []
-  (println "Fetching map!"))
-
 (def registered-tasks
-  [[::fetch-trains #'fetch-trains!]
-   [::fetch-map #'fetch-map!]])
+  {::fetch-todos #'fetch-todos!})
 
 (defn do! [task]
-  (let [task-runner (->> registered-tasks
-                         (filter #(= task (first %)))
-                         (first)
-                         (second))]
+  (when-let [task-runner (some-> task registered-tasks)]
     (task-runner)))
+
+(comment
+
+  (-> "https://dummyjson.com/todos"
+      (client/get
+       {:query-params {:limit 0}})
+      :body
+      (json/read-str :key-fn keyword)
+      :todos))

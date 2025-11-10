@@ -6,7 +6,6 @@
   (println (str "Running server on " port))
   (server/run-server handler http-config))
 
-
 (defn stop [shutdown-server]
   (println "Shutting down http server")
   (shutdown-server))
