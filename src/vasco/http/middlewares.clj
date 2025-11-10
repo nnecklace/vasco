@@ -1,12 +1,15 @@
 (ns vasco.http.middlewares
-  (:require [clojure.edn :as edn]
-            [datomic.api :as d]))
+  (:require
+   [clojure.edn :as edn]
+   [datomic.api :as d])
+  (:import
+   (clojure.lang ExceptionInfo)))
 
 (defn wrap-post-method [handler]
-  (fn [request]
-    (if (= (:request-method request) :post)
+  (fn [{:keys [request-method] :as request}]
+    (if (= request-method :post)
       (handler request)
-      (throw (Exception. "Method not allowed")))))
+      (throw (ex-info "Method not allowed" {:method request-method})))))
 
 (defn create-system [{:keys [conn] :as dependencies}]
   (assoc dependencies
