@@ -3,12 +3,13 @@
    [clojure.spec.alpha :as s]
    [vasco.oracle.dispatcher :refer [Dispatcher] :as d]))
 
+(s/def ::question (s/keys :req-un [:kind :answer]))
+
 (defn invoke-question [system {:question/keys [context interceptor answer]} ctx]
   (when (and (keyword? context) (not (s/valid? context ctx)))
     (throw (ex-info "Ctx did not conform to the expected context" {:context (s/describe context) :ctx ctx})))
 
   ;; run all interceptors
-
   (answer system ctx))
 
 (defn compute [computations]
@@ -18,11 +19,17 @@
            nil))
        first))
 
-;; TODO: check for duplicate questions
 (defn define [& questions]
-  (let [question-registry (->> questions
-                               (map (juxt :question/kind #(dissoc % :question/kind)))
-                               (into {}))]
+  (let [invalid (filter #(not (s/valid? ::question %)) questions)
+        duplicates (->> questions (map :question/kind) frequencies (filter (fn [[_ v]] (< 1 v))) (map first))
+        question-registry (->> questions (map (juxt :question/kind #(dissoc % :question/kind))) (into {}))]
+
+    (when (seq invalid)
+      (throw (ex-info "Invalid questions! All questions require a kind and an answer, the following did not conform to spec" {:invalid-questions questions})))
+
+    (when (seq duplicates)
+      (throw (ex-info "Duplicate questions! The following questions were defined more than once" {:duplicate-questions duplicates})))
+
     (reify Dispatcher
       (tell [_]
         (->> question-registry
