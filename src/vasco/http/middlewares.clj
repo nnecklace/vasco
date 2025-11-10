@@ -29,7 +29,15 @@
         {:status 200
          :body (pr-str {:success? true
                         :result response})})
-      (catch Exception e
+      (catch ExceptionInfo e
         {:status 400
          :body (pr-str {:success? false
-                        :result (str "Error: " (.getMessage e))})}))))
+                        :result {:kind :controlled-exception
+                                 :message (str "Error: " (ex-message e))
+                                 :error (ex-data e)}})})
+      (catch Exception e
+        {:status 500
+         :body (pr-str {:success? false
+                        :result {:kind :uncontrolled-exception
+                                 :message (str "Catasrophically failed: " (.getMessage e))
+                                 :error (ex-data e)}})}))))
