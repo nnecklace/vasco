@@ -2,7 +2,9 @@
   (:require [vasco.oracle.dispatcher :as d]
             [clojure.spec.alpha :as s]));; TODO: d is a bad name, already used by datomic
 
-(s/def ::body (s/keys :req [:kind]))
+(s/def ::kind keyword?)
+
+(s/def ::body (s/keys :req-un [::kind]))
 
 (defn validate-question-kind [dispatcher {:keys [params]}]
   (let [available-questions (d/tell dispatcher)]

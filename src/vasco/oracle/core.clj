@@ -3,7 +3,10 @@
    [clojure.spec.alpha :as s]
    [vasco.oracle.dispatcher :refer [Dispatcher] :as d]))
 
-(s/def ::question (s/keys :req-un [:kind :answer]))
+(s/def :question/answer any?)
+(s/def :question/kind keyword?)
+
+(s/def ::question (s/keys :req [:question/kind :question/answer]))
 
 (defn invoke-question [system {:question/keys [context interceptor answer]} ctx]
   (when (and (keyword? context) (not (s/valid? context ctx)))
@@ -24,6 +27,7 @@
         duplicates (->> questions (map :question/kind) frequencies (filter (fn [[_ v]] (< 1 v))) (map first))
         question-registry (->> questions (map (juxt :question/kind #(dissoc % :question/kind))) (into {}))]
 
+    ;; this is really stupid
     (when (seq invalid)
       (throw (ex-info "Invalid questions! All questions require a kind and an answer, the following did not conform to spec" {:invalid-questions questions})))
 
