@@ -16,8 +16,7 @@
 (comment
 
   (-> "https://dummyjson.com/todos"
-      (client/get
-       {:query-params {:limit 0}})
+      (client/get {:query-params {:limit 0}})
       :body
       (json/read-str :key-fn keyword)
       :todos))

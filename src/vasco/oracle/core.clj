@@ -27,7 +27,7 @@
         duplicates (->> questions (map :question/kind) frequencies (filter (fn [[_ v]] (< 1 v))) (map first))
         question-registry (->> questions (map (juxt :question/kind #(dissoc % :question/kind))) (into {}))]
 
-    ;; this is really stupid
+    ;; this is really stupid.... or perhaps not?
     (when (seq invalid)
       (throw (ex-info "Invalid questions! All questions require a kind and an answer, the following did not conform to spec" {:invalid-questions questions})))
 

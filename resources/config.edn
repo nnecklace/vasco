@@ -4,9 +4,9 @@
 
  :http/handler {:dependencies {:conn #ig/ref :datomic/conn}}
 
- :servitor/service {:services [{:id :vasco.servitor.task/fetch-todos :interval 10000 :run? true}
-                               {:id :vasco.servitor.task/fetch-map :interval 10000 :run? false}]}
+ :servitor/config {:conn #ig/ref :datomic/conn
+                   :services [{:id :vasco.servitor.task/fetch-todos :interval 10000 :run? true}]}
 
- :datomic/migrations {:config {}}
+ :datomic/migrations {:location "migrations.edn" :conn #ig/ref :datomic/conn}
 
  :datomic/conn {:db/host "datomic:mem://" :db/name "vasco" :db/port 4334}}

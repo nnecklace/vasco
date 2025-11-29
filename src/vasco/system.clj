@@ -1,11 +1,18 @@
 (ns vasco.system
   (:require
+   [clojure.edn :as edn]
    [clojure.java.io :as io]
    [datomic.api :as d]
    [integrant.core :as ig]
-   [vasco.http.server :as server]
    [vasco.http.handler :as http-handler]
+   [vasco.http.server :as server]
    [vasco.servitor.core :as servitor]))
+
+;; TODO:
+;; 1. Create a database for the servitor services
+;; 2. Each service polls their own database
+;; 3. Introduce structured logging
+;; 4. Introduce commands
 
 (defmethod ig/init-key :application/environment [_ env]
   env)
@@ -19,8 +26,11 @@
 (defmethod ig/init-key :http/handler [_ {:keys [dependencies]}]
   (http-handler/router dependencies))
 
-(defmethod ig/init-key :datomic/migrations [_ {:keys [config]}]
-  config)
+(defmethod ig/init-key :datomic/migrations [_ {:keys [conn location]}]
+  (let [migrations (edn/read-string (slurp (io/resource location)))]
+    (println "Running migrations")
+    (doseq [migration migrations]
+      @(d/transact conn migration))))
 
 (defmethod ig/init-key :datomic/conn [_ conn-config]
   (println "Launching datomic with following config " (prn-str conn-config))
@@ -31,17 +41,55 @@
 (defmethod ig/halt-key! :datomic/conn [_ conn]
   (d/release conn))
 
-(defmethod ig/init-key :servitor/service [_ {:keys [services]}]
+(defmethod ig/init-key :servitor/config [_ {:keys [conn services]}]
   (let [services (->> services
                       (filter :run?)
-                      (map #(servitor/create-service (:id %) (:interval %))))]
+                      (map #(servitor/create-service conn %)))]
     (doseq [service services]
       (servitor/start-service! service))
     services))
 
-(defmethod ig/halt-key! :servitor/service [_ services]
+(defmethod ig/halt-key! :servitor/config [_ services]
   (doseq [service services]
     (servitor/stop-service! service)))
 
 (def config
   (ig/read-string (slurp (io/resource "config.edn"))))
+
+(comment
+
+  (require '[integrant.repl.state])
+
+  (def system integrant.repl.state/system)
+
+  (def conn (:datomic/conn system))
+
+  (def db (d/db conn))
+
+  (d/q '[:find (count ?eid) .
+         :where [?eid :job/id ?id]]
+       db)
+
+  @(d/transact conn [[:db/add "new-job" :job/id #uuid "d1c2b5e2-2d77-4b05-9dd4-6e8b578247ca"]])
+
+  @(d/transact conn [[:db/add 17592186045418 :job/type ::test-job]])
+
+  (d/touch (d/entity db 17592186045418))
+
+  @(d/transact conn [{:job/id (java.util.UUID/randomUUID)
+                      :job/type :vasco.servitor.task/fetch-todos
+                      :job/state :pending
+                      :job/retries 5}])
+
+
+  (d/q '[:find (count ?e) .
+         :in $ ?id
+         :where
+         [?e :job/id ?id]
+         [?e :job/state :pending]]
+       db
+       )
+
+  (d/touch (d/entity db 17592186045421))
+
+  :rcf)
