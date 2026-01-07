@@ -7,9 +7,6 @@
   (start! [_])
   (stop! [_]))
 
-;; Find all jobs that are pending or failed
-;; Perfer failed jobs over pending jobs
-;; Choose job that has waited the longest
 (defn get-next-job [db task]
   (->> (d/q '[:find [?e (min ?tx)]
               :in $ ?task
@@ -25,8 +22,6 @@
        (first)
        (d/entity db)))
 
-;; A service should be tied to a database table
-;; A job should be added to a database table
 (defn create-service [conn {:keys [interval task]}]
   (let [stop-ch (chan)]
     (reify Service
