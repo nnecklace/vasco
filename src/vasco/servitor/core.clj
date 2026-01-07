@@ -11,13 +11,19 @@
 ;; Perfer failed jobs over pending jobs
 ;; Choose job that has waited the longest
 (defn get-next-job [db task]
-  (d/q '[:find (count ?e) .
-         :in $ ?task
-         :where
-         [?e :job/task ?task]
-         [?e :job/state :pending]]
-       db
-       task))
+  (->> (d/q '[:find [?e (min ?tx)]
+              :in $ ?task
+              :where
+              [?e :job/id _ ?tx]
+              [?e :job/task ?task]
+              (or
+               [?e :job/state :failed]
+               [?e :job/state :pending])
+              [?tx :db/txInstant _]]
+            db
+            task)
+       (first)
+       (d/entity db)))
 
 ;; A service should be tied to a database table
 ;; A job should be added to a database table

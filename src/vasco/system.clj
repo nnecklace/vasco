@@ -30,8 +30,7 @@
 (defmethod ig/init-key :datomic/migrations [_ {:keys [conn location]}]
   (let [migrations (edn/read-string (slurp (io/resource location)))]
     (println "Running migrations")
-    (doseq [migration migrations]
-      @(d/transact conn migration))))
+    @(d/transact conn migrations)))
 
 (defmethod ig/init-key :datomic/conn [_ conn-config]
   (println "Launching datomic with following config " (prn-str conn-config))
