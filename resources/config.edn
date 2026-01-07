@@ -5,7 +5,9 @@
  :http/handler {:dependencies {:conn #ig/ref :datomic/conn}}
 
  :servitor/config {:conn #ig/ref :datomic/conn
-                   :services [{:id :vasco.servitor.task/fetch-todos :interval 10000 :run? true}]}
+                   :services [{:task :vasco.servitor.task/fetch-todos
+                               :interval 10000
+                               :run? true}]}
 
  :datomic/migrations {:location "migrations.edn" :conn #ig/ref :datomic/conn}
 

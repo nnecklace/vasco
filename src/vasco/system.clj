@@ -9,6 +9,7 @@
    [vasco.servitor.core :as servitor]))
 
 ;; TODO:
+;; 0. Introduce tests
 ;; 1. Create a database for the servitor services
 ;; 2. Each service polls their own database
 ;; 3. Introduce structured logging
@@ -72,23 +73,20 @@
 
   @(d/transact conn [[:db/add "new-job" :job/id #uuid "d1c2b5e2-2d77-4b05-9dd4-6e8b578247ca"]])
 
-  @(d/transact conn [[:db/add 17592186045418 :job/type ::test-job]])
+  @(d/transact conn [[:db/add 17592186045418 :job/task ::test-job]])
 
   (d/touch (d/entity db 17592186045418))
 
   @(d/transact conn [{:job/id (java.util.UUID/randomUUID)
-                      :job/type :vasco.servitor.task/fetch-todos
-                      :job/state :pending
+                      :job/task :vasco.servitor.task/fetch-todos
+                      :job/state :failed
                       :job/retries 5}])
 
-
   (d/q '[:find (count ?e) .
-         :in $ ?id
          :where
          [?e :job/id ?id]
-         [?e :job/state :pending]]
-       db
-       )
+         [?e :job/state :failed]]
+       db)
 
   (d/touch (d/entity db 17592186045421))
 

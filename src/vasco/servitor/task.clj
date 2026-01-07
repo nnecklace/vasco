@@ -9,12 +9,7 @@
 (def registered-tasks
   {::fetch-todos #'fetch-todos!})
 
-(defn do! [task]
-  (when-let [task-runner (some-> task registered-tasks)]
-    (task-runner)))
-
 (comment
-
   (-> "https://dummyjson.com/todos"
       (client/get {:query-params {:limit 0}})
       :body
