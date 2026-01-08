@@ -5,9 +5,11 @@
  :http/handler {:dependencies {:conn #ig/ref :datomic/conn}}
 
  :servitor/config {:conn #ig/ref :datomic/conn
-                   :services [{:task :vasco.servitor.task/fetch-todos
+                   :services [{:task :vasco.servitor.task/init-todos
                                :interval 10000
-                               :run? true}]}
+                               :run? true
+                               :opts {:url "https://dummyjson.com/todos"
+                                      :limit 0}}]}
 
  :datomic/migrations {:location "migrations.edn" :conn #ig/ref :datomic/conn}
 

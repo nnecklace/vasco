@@ -21,4 +21,19 @@
 
  {:db/ident       :job/last-finished-at
   :db/valueType   :db.type/instant
-  :db/cardinality :db.cardinality/one}]
+  :db/cardinality :db.cardinality/one}
+
+
+ ;; todos
+ {:db/ident       :todo/id
+  :db/valueType   :db.type/long
+  :db/cardinality :db.cardinality/one}
+
+ {:db/ident       :todo/task
+  :db/valueType   :db.type/string
+  :db/cardinality :db.cardinality/one}
+
+ {:db/ident       :todo/done?
+  :db/valueType   :db.type/boolean
+  :db/cardinality :db.cardinality/one}
+ ]

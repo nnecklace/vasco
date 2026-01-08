@@ -74,19 +74,35 @@
 
   @(d/transact conn [[:db/add 17592186045418 :job/task ::test-job]])
 
-  (d/touch (d/entity db 17592186045418))
+  (d/touch (d/entity db 13194139534313))
 
   @(d/transact conn [{:job/id (java.util.UUID/randomUUID)
-                      :job/task :vasco.servitor.task/fetch-todos
-                      :job/state :failed
+                      :job/task :vasco.servitor.task/init-todos
+                      :job/state :pending
                       :job/retries 5}])
 
   (d/q '[:find (count ?e) .
          :where
          [?e :job/id ?id]
-         [?e :job/state :failed]]
+         [?e :job/state :succeeded]]
        db)
 
-  (d/touch (d/entity db 17592186045421))
+  (d/touch (d/entity db 17592186045425))
+
+  (->> db
+       (d/q '[:find ?tx ?t
+              :where
+              [?tx :db/txInstant ?t]])
+       (map #(d/entity db (first %))))
+
+  (d/q '[:find [?e ...]
+         :where
+         [?e :job/id ?id]]
+       db)
+
+  (d/q '[:find [?e ...]
+         :where
+         [?e :todo/id ?id]]
+       db)
 
   :rcf)

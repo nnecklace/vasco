@@ -17,7 +17,7 @@
     {:conn conn
      :db (d/db conn)}))
 
-(defmacro with-test-db
+(defmacro with-db
   {:clj-kondo/lint-as 'clojure.core/let}
   [[db-sym tx] & body]
   `(let [m# (create-test-db ~tx)
