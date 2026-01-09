@@ -9,11 +9,7 @@
    [vasco.servitor.core :as servitor]))
 
 ;; TODO:
-;; 0. Introduce tests
-;; 1. Create a database for the servitor services
-;; 2. Each service polls their own database
 ;; 3. Introduce structured logging
-;; 4. Introduce commands
 
 (defmethod ig/init-key :application/environment [_ env]
   env)

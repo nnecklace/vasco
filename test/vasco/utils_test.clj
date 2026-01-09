@@ -25,3 +25,12 @@
          res# (do ~@body)]
      (d/release (:conn m#))
      res#))
+
+(defmacro with-conn
+  {:clj-kondo/lint-as 'clojure.core/let}
+  [[conn-sym tx] & body]
+  `(let [m# (create-test-db ~tx)
+         ~conn-sym (:conn m#)
+         res# (do ~@body)]
+     (d/release (:conn m#))
+     res#))

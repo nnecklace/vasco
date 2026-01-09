@@ -23,12 +23,4 @@
 
 (comment
 
-  (doall
-   (for [x (range 10)]
-     x))
-
-  (effect! {}
-           :http/get
-           [{:url "https://dummyjson.com/todos" :query-params {:limit 0}}])
-
   :-)
