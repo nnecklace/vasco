@@ -9,7 +9,7 @@
    [vasco.servitor.core :as servitor]))
 
 ;; TODO:
-;; 3. Introduce structured logging
+;; 1. Introduce structured logging
 
 (defmethod ig/init-key :application/environment [_ env]
   env)
