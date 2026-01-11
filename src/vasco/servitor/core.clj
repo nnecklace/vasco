@@ -43,8 +43,8 @@
                     (println "Task" (name (:job/task job)) "failed")
                     @(d/transact conn [[:db/add (:db/id job) :job/state :failed]])))))
             (let [[_ ch] (alts! [(timeout (+ interval (rand-int 1000))) stop-ch])]
-                (when-not (= ch stop-ch)
-                  (recur))))))
+              (when-not (= ch stop-ch)
+                (recur))))))
       (stop! [_]
         (println "Closing servitor service")
         (close! stop-ch)))))

@@ -45,6 +45,10 @@
       (servitor/start-service! service))
     services))
 
+(defmethod ig/init-key :servitor/jobs [_ {:keys [conn jobs]}]
+  (let [jobs (mapv #(assoc % :job/id (random-uuid)) jobs)]
+    @(d/transact conn jobs)))
+
 (defmethod ig/halt-key! :servitor/config [_ services]
   (doseq [service services]
     (servitor/stop-service! service)))
@@ -72,7 +76,7 @@
 
   (d/touch (d/entity db 13194139534313))
 
-  @(d/transact conn [{:job/id (java.util.UUID/randomUUID)
+  @(d/transact conn [{:job/id (random-uuid)
                       :job/task :vasco.servitor.task/init-todos
                       :job/state :pending
                       :job/retries 5}])

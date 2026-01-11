@@ -11,6 +11,12 @@
                                :opts {:url "https://dummyjson.com/todos"
                                       :limit 0}}]}
 
+ :servitor/jobs {:conn #ig/ref :datomic/conn
+                 :migrations #ig/ref :datomic/migrations
+                 :jobs [{:job/task :vasco.servitor.task/init-todos
+                         :job/state :pending
+                         :job/retries 5}]}
+
  :datomic/migrations {:location "migrations.edn" :conn #ig/ref :datomic/conn}
 
  :datomic/conn {:db/host "datomic:mem://" :db/name "vasco" :db/port 4334}}
